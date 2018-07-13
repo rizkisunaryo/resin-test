@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "git-hook": "npm run test",
-    "precommit": "npm run git-hook",
-    "prepush": "npm run git-hook",
-    "test": "eslint --fix --ignore-path .gitignore ."
+    "lint": "eslint --fix --ignore-path .gitignore .",
+    "test": "npm run lint"
   },
   "author": "Rizki Sunaryo",
   "license": "ISC",
@@ -16,6 +14,8 @@
   },
   "devDependencies": {
     "eslint": "4.19.1",
-    "eslint-config-strongloop": "2.1.0"
-  }
+    "eslint-config-strongloop": "2.1.0",
+    "pre-commit": "1.2.2"
+  },
+  "precommit": "test"
 }
