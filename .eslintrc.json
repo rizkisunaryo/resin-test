@@ -1,0 +1,7 @@
+{
+  "extends": "strongloop",
+  "parserOptions": { "ecmaVersion": 8 },
+  "globals": {
+    "Promise": true
+  }
+}

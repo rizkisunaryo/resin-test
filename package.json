@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "git-hook": "npm run test",
+    "precommit": "npm run git-hook",
+    "prepush": "npm run git-hook",
+    "test": "eslint --fix --ignore-path .gitignore ."
+  },
+  "author": "Rizki Sunaryo",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "2.1.1"
+  },
+  "devDependencies": {
+    "eslint": "4.19.1",
+    "eslint-config-strongloop": "2.1.0"
+  }
+}
