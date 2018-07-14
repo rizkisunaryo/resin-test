@@ -9,7 +9,7 @@
 
 # Cellular connections are expensive
   - The drone is only asked to send token only once during the handshake.
-  - Coordinates are sent in bare string.
+  - Lat and long are sent just in numbers.
 
 # Room for Improvement
   - Dashboard should use Google Maps

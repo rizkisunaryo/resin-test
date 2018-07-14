@@ -3,6 +3,7 @@
 const {PATH_DASHBOARD, PATH_DRONE} = require('../../constants/Path');
 const {DoneAll, DoneOnce} = require('../../utils/TestUtil');
 
+const assert = require('assert');
 const jwt = require('jsonwebtoken');
 const openSocket = require('socket.io-client');
 
@@ -91,6 +92,27 @@ describe('./executables/ws.js', () => {
         dashboardSocket.disconnect();
       }
     });
+  });
+
+  it(`if the dashboard is opened after drones sent the coordinates,
+    then dashboard should still receive
+    all drones current coordinates`, () => {
+
+    setTimeout(() => {
+      // just create dashboard socket
+      // because we are using drone sockets from tests above
+      const dashboardSocket = openSocket(wsUri, {path: PATH_DASHBOARD});
+      dashboardSocket.on('all-drone-coordinates', dronesObj => {
+        assert.deepStrictEqual(dronesObj.drone3.lat, 0.001);
+        assert.deepStrictEqual(dronesObj.drone3.long, 0.002);
+        assert.deepStrictEqual(dronesObj.drone4.lat, 0.001);
+        assert.deepStrictEqual(dronesObj.drone4.long, 0.002);
+        assert.deepStrictEqual(dronesObj.drone5.lat, 0.003);
+        assert.deepStrictEqual(dronesObj.drone5.long, 0.004);
+
+        dashboardSocket.disconnect();
+      });
+    }, 500);
   });
 
 });
