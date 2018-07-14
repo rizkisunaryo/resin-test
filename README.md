@@ -5,10 +5,14 @@
   - [Repatch] as state management for React
 
 # Completeness
+## Technical
   - Backend unit testing
   - Frontend unit testing for functions
   - Dashboard
   - Drone simulator (`resin-ws-drone/executables/drone-simulator.js`)
+## Product
+  - Drone speed
+  - Detect when a drone is not moving for 10 seconds
 
 # Cellular Connections are Expensive
   - The drone is only asked to send token only once during the handshake.
