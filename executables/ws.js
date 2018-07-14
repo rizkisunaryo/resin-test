@@ -12,7 +12,7 @@ const dashboardIo = require('socket.io')(server, {path: PATH_DASHBOARD});
 
 
 var dronesObj = {};
-// prevLat and prevLong is to calculate the drone speed
+// prevLat and prevLong is to know whether the drone is stopped
 const getPrevLat = id => lodashGet(dronesObj, `['${id}'].lat`, undefined);
 const getPrevLong = id => lodashGet(dronesObj, `['${id}'].long`, undefined);
 const setDrone = (id, lat, long) => {
@@ -22,11 +22,14 @@ const setDrone = (id, lat, long) => {
   // if previous position of the drone is differenct than current position,
   // then reset notMovingTimeout
   let notMovingTimeout = lodashGet(dronesObj, `['${id}'].notMovingTimeout`, 0);
-  if (lat !== prevLat && long !== prevLat) {
+  id === 'drone5' && console.log('coba: ', lat, long, prevLat, prevLong);
+  if (lat !== prevLat || long !== prevLong) {
+    id === 'drone5' && console.log('masuk sini');
     notMovingTimeout = 0;
   }
 
   dronesObj[id] = {
+    id,
     lat,
     long,
     prevLat,
@@ -46,7 +49,7 @@ droneIo.on('connection', socket => {
     socket.disconnect(true);
     return;
   }
-  console.log('a drone connected: ', drone.id);
+  console.log('drone connected: ', drone.id);
 
   // for testing purpose
   socket.on('myPing', msg => {
@@ -55,7 +58,11 @@ droneIo.on('connection', socket => {
   });
 
   socket.on('disconnect', () => {
-    console.log('user disconnected: ', drone.id);
+    console.log('drone disconnected: ', drone.id);
+    if (dronesObj[drone.id]) {
+      dronesObj[drone.id].notMovingTimeout =
+        (DRONE_NOT_MOVING_TIMEOUT_SECOND + 1) * 1000;
+    }
   });
 
   // if drone sends the coordinate,
@@ -65,9 +72,7 @@ droneIo.on('connection', socket => {
       'dashboard-coordinate',
       drone.id,
       lat,
-      long,
-      getPrevLat(drone.id),
-      getPrevLong(drone.id)
+      long
     );
     setDrone(drone.id, lat, long);
   });
@@ -96,16 +101,16 @@ function increaseDroneTimeout() {
       // if drone notMovingTimeout is more than 10 seconds,
       // then push the drone id to notMovingDroneIds
       if (dronesObj[droneId].notMovingTimeout >
-        DRONE_NOT_MOVING_TIMEOUT_SECOND) {
+        DRONE_NOT_MOVING_TIMEOUT_SECOND * 1000) {
         notMovingDroneIds.push(droneId);
       }
     }
 
     // if there are some drones that timeout
     // then send the data to dashboard
-    if (notMovingDroneIds.length > 0) {
-      dashboardIo.emit('not-moving-drones', notMovingDroneIds);
-    }
+    // if (notMovingDroneIds.length > 0) {
+    dashboardIo.emit('not-moving-drones', notMovingDroneIds);
+    // }
 
     increaseDroneTimeout();
   }, timeoutInterval);
