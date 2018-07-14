@@ -2,6 +2,8 @@
   "extends": "strongloop",
   "parserOptions": { "ecmaVersion": 8 },
   "globals": {
+    "it": true,
+    "describe": true,
     "Promise": true
   }
 }
