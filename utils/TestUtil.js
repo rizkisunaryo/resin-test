@@ -5,8 +5,7 @@ function DoneOnce(done) {
 
   this.trigger = function(error = undefined) {
     if (called) {
-      console.warn('done has already been called');
-
+      console.log('done has already been called');
       return;
     }
 

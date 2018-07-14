@@ -1,5 +1,6 @@
 'use strict';
 
+const {DRONE_NOT_MOVING_TIMEOUT_SECOND} = require('../../constants/Drone');
 const {PATH_DASHBOARD, PATH_DRONE} = require('../../constants/Path');
 const {DoneAll, DoneOnce} = require('../../utils/TestUtil');
 
@@ -12,7 +13,7 @@ const generateToken = id => jwt.sign({id}, process.env.RESIN_TOKEN_KEY);
 
 describe('./executables/ws.js', () => {
   it('should be connected', done => {
-    let myDone = new DoneOnce(done);
+    const myDone = new DoneOnce(done);
     const socket = openSocket(wsUri, {
       path: PATH_DRONE,
       query: {token: generateToken('drone1')},
@@ -114,5 +115,32 @@ describe('./executables/ws.js', () => {
       });
     }, 500);
   });
+
+  it('should detect not moving drone', done => {
+    const doneOnce = new DoneOnce(done);
+    const dashboardSocket = openSocket(wsUri, {path: PATH_DASHBOARD});
+    dashboardSocket.on('not-moving-drones', droneIds => {
+      if (['drone3', 'drone4', 'drone5']
+        .some(droneId => droneIds.indexOf(droneId) > -1)) {
+        doneOnce.trigger();
+        dashboardSocket.disconnect();
+      }
+    });
+  }).timeout((DRONE_NOT_MOVING_TIMEOUT_SECOND + 3) * 1000);
+
+  it(`if dashboard connects,
+    it should receive all not moving drones data`, done => {
+    const doneOnce = new DoneOnce(done);
+    setTimeout(() => {
+      const dashboardSocket = openSocket(wsUri, {path: PATH_DASHBOARD});
+      dashboardSocket.on('not-moving-drones', droneIds => {
+        if (['drone3', 'drone4', 'drone5']
+          .some(droneId => droneIds.indexOf(droneId) > -1)) {
+          doneOnce.trigger();
+          dashboardSocket.disconnect();
+        }
+      });
+    }, (DRONE_NOT_MOVING_TIMEOUT_SECOND + 3) * 1000);
+  }).timeout((DRONE_NOT_MOVING_TIMEOUT_SECOND + 4) * 1000);
 
 });
