@@ -76,7 +76,7 @@ docker rm -f $(docker ps -aqf "label=resin-test")
 # Room for Improvement
 ## Technical
   - In `ws.js`, the event names are messy. It should be in this rule: `from-to-event`, so it's going to be easy to distinguish.
-  - The WS server only uses 1 replica. Since this is a websocket, so I'm not sure whether the handshake will be managed automatically properly if there are more than 1 replica. Stress test is needed to make sure about this.
+  - Explore about [SocketCluster] to scale the web socket.
 ## Product
   - Dashboard should use Google Maps
   - Dashboard can zoom in and zoom out automatically, based on drone positions
@@ -89,3 +89,4 @@ docker rm -f $(docker ps -aqf "label=resin-test")
    [repatch]: <https://github.com/jaystack/repatch>
    [here]: <https://github.com/rizkisunaryo/resin-docker>
    [docker]: <https://www.docker.com/>
+   [socketcluster]: <https://socketcluster.io/#!/>
